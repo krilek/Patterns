@@ -1,6 +1,7 @@
 ﻿namespace Patterns
 {
     using System.Collections.Generic;
+    using System.Text.RegularExpressions;
 
     public class RabinKarpPatternSearch : IPatternAlgorithm
     {
@@ -16,9 +17,11 @@
 
         public List<int> MatchPattern(string data, string pattern)
         {
+            data = Regex.Replace(data, @"\s+", string.Empty);
+            pattern = Regex.Replace(pattern, @"\s+", string.Empty);
             List<int> indexes = new List<int>();
-            int p = 0; // hash value for pattern  
-            int t = 0; // hash value for txt  
+            int p = 0;
+            int t = 0;
             int h = 1;
 
             for (int i = 0; i < pattern.Length - 1; i++)
@@ -34,12 +37,9 @@
 
             for (int i = 0; i <= data.Length - pattern.Length; i++)
             {
-                // Check the hash values of current window of text  
-                // and pattern. If the hash values match then only  
-                // check for characters on by one  
+                // Hashes are equal so check letters
                 if (p == t)
                 {
-                    /* Check for characters one by one */
                     int j;
                     for (j = 0; j < pattern.Length; j++)
                     {
@@ -49,29 +49,26 @@
                         }
                     }
 
-                    // if p == t and pat[0...pattern.Length-1] = txt[i, i+1, ...i+pattern.Length-1]  
                     if (j == pattern.Length)
                     {
                         indexes.Add(i);
                     }
                 }
 
-                // Calculate hash value for next window of text: Remove  
-                // leading digit, add trailing digit  
+                // Re calc hash for moved pattern to right
                 if (i < data.Length - pattern.Length)
                 {
-                    t = (this.d * (t - data[i] * h) + data[i + pattern.Length]) % this.q;
+                    int t1 = t - data[i] * h;
+                    t = (this.d * t1 + data[i + pattern.Length]) % this.q;
 
-                    // We might get negative value of t, converting it  
-                    // to positive  
                     if (t < 0)
-                        t = (t + this.q);
+                    {
+                        t += this.q;
+                    }
                 }
             }
 
             return indexes;
         }
-
-        // private 
     }
 }

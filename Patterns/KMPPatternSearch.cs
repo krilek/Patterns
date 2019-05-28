@@ -1,18 +1,21 @@
 ﻿namespace Patterns
 {
     using System.Collections.Generic;
+    using System.Text.RegularExpressions;
 
     public class KMPPatternSearch : IPatternAlgorithm
     {
         public List<int> MatchPattern(string data, string pattern)
         {
-            List<int> indexes = new List<int>();
+            data = Regex.Replace(data, @"\s+", string.Empty);
+            pattern = Regex.Replace(pattern, @"\s+", string.Empty);
 
-            // Preprocess the pattern (calculate lps[] array) 
-            var lps = this.computeLPSArray(pattern);
+            var indexes = new List<int>();
 
-            int i = 0; // index for txt[] 
-            int j = 0; // index for pat[] 
+            var suffixTable = this.GenerateSuffixTable(pattern);
+
+            int i = 0;
+            int j = 0;
             while (i < data.Length)
             {
                 if (pattern[j] == data[i])
@@ -23,56 +26,49 @@
 
                 if (j == pattern.Length)
                 {
+                    // Found match
                     indexes.Add(i - j);
-                    j = lps[j - 1];
+                    j = suffixTable[j - 1];
                 }
 
-                // mismatch after j matches 
+                // j matches, and mismatch, skip according to table or increment i
                 else if (i < data.Length && pattern[j] != data[i])
                 {
-                    // Do not match lps[0..lps[j-1]] characters, 
-                    // they will match anyway 
+                    // Skip chars based on suffix table
                     if (j != 0)
-                        j = lps[j - 1];
+                    {
+                        j = suffixTable[j - 1];
+                    }
                     else
+                    {
                         i = i + 1;
+                    }
                 }
             }
 
             return indexes;
         }
 
-        private int[] computeLPSArray(string pattern)
+        private int[] GenerateSuffixTable(string pattern)
         {
-            int[] lps = new int[pattern.Length];
+            var lps = new int[pattern.Length];
+            var record = 0;
+            lps[0] = 0;
 
-            // length of the previous longest prefix suffix 
-            int len = 0;
-
-            lps[0] = 0; // lps[0] is always 0 
-
-            // the loop calculates lps[i] for i = 1 to M-1 
-            int i = 1;
+            var i = 1;
             while (i < pattern.Length)
             {
-                if (pattern[i] == pattern[len])
+                if (pattern[i] == pattern[record])
                 {
-                    len++;
-                    lps[i] = len;
+                    record++;
+                    lps[i] = record;
                     i++;
                 }
                 else
                 {
-                    // (pat[i] != pat[len]) 
-                    // This is tricky. Consider the example. 
-                    // AAACAAAA and i = 7. The idea is similar 
-                    // to search step. 
-                    if (len != 0)
+                    if (record != 0)
                     {
-                        len = lps[len - 1];
-
-                        // Also, note that we do not increment 
-                        // i here 
+                        record = lps[record - 1];
                     }
                     else
                     {
