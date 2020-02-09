@@ -9,8 +9,8 @@
 
         public List<int> MatchPattern(string data, string pattern)
         {
-            data = Regex.Replace(data, @"\s+", string.Empty);
-            pattern = Regex.Replace(pattern, @"\s+", string.Empty);
+            data = Regex.Replace(data, @"\s*", string.Empty);
+            pattern = Regex.Replace(pattern, @"\s*", string.Empty);
             List<int> indexes = new List<int>();
             for (int i = 0; i < data.Length - pattern.Length; i++)
             {

@@ -42,7 +42,7 @@
                     Console.WriteLine($"Founded {naiveResult.Count} occurrences of pattern in provided data.");
                     Console.WriteLine(new string('-', 10));
                     Console.WriteLine(
-                        $"Naive algorithm:{stopwatch1.ElapsedMilliseconds}\nRabin Karp algorithm:{stopwatch2.ElapsedMilliseconds}\nKMP algorithm:{stopwatch3.ElapsedMilliseconds}");
+                        $"Naive algorithm:{stopwatch1.ElapsedMilliseconds} miliseconds\nRabin Karp algorithm:{stopwatch2.ElapsedMilliseconds} miliseconds\nKMP algorithm:{stopwatch3.ElapsedMilliseconds} miliseconds");
                     Console.WriteLine(new string('-', 10));
 
                     // Algorithms work
